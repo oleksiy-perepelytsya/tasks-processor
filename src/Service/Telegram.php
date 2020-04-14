@@ -3,18 +3,10 @@
 namespace App\Service;
 
 use Longman\TelegramBot\Request;
+use Longman\TelegramBot\Exception\TelegramException;
 
 class Telegram
 {
-    private $botApiKey  = '1017992094:AAHM9DigJGvZmGyLP2RJZu1pP5seIV12UEw';
-    private $botUsername = 'testdocler_bot';
-    private $mysqlCredentials = [
-        'host'     => '172.17.0.2',
-        'port'     => 3306, // optional
-        'user'     => 'alex',
-        'password' => 'password',
-        'database' => 'tasks_processor',
-    ];
     private $api;
 
     const COMMAND_START = 'start';
@@ -23,10 +15,19 @@ class Telegram
 
     public static $allowedCommands = [self::COMMAND_START, self::COMMAND_NEXT, self::COMMAND_NEW];
 
+    /**
+     * @return void
+     * @throws TelegramException
+     */
     public function __construct()
     {
-        $this->api = new \Longman\TelegramBot\Telegram($this->botApiKey, $this->botUsername);
-        $this->api->enableMySql($this->mysqlCredentials);
+        $this->api = new \Longman\TelegramBot\Telegram($_ENV['BOT_API_KEY'], $_ENV['BOT_USERNAME']);
+        $this->api->enableMySql([
+            'host'     => $_ENV['DATABASE_HOST'],
+            'user'     => $_ENV['DATABASE_USER'],
+            'password' => $_ENV['DATABASE_PASSWORD'],
+            'database' => $_ENV['DATABASE_NAME'],
+        ]);
     }
 
     public function getUpdates()
@@ -34,6 +35,12 @@ class Telegram
         return $this->api->handleGetUpdates()->getResult();
     }
 
+    /**
+     * @param int $chatId
+     * @param array $message
+     * @return void
+     * @throws TelegramException
+     */
     public function sendMessage($chatId, $message)
     {
         Request::sendMessage([

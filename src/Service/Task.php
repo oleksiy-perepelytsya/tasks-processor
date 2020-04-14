@@ -7,13 +7,12 @@ use GuzzleHttp\Client;
 
 class Task
 {
-    private $baseUri  = 'http://178.128.75.144:8080';
     private $client;
 
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => $this->baseUri,
+            'base_uri' => $_ENV['TASK_SERVICE_URI'],
             'defaults' => [
                 'exceptions' => false
             ]

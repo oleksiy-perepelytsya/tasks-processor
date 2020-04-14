@@ -8,6 +8,7 @@ use Symfony\Component\HttpClient\HttpClient;
 use App\Service\Telegram;
 use App\Service\Task;
 use App\Entity\Statement;
+use Longman\TelegramBot\Exception\TelegramException;
 
 class TelegramBotController extends AbstractController
 {
@@ -18,6 +19,7 @@ class TelegramBotController extends AbstractController
      * @param Telegram $telegram
      * @param Task $taskService
      * @return string
+     * @throws TelegramException
      */
     public function indexAction(Telegram $telegram, Task $taskService)
     {
