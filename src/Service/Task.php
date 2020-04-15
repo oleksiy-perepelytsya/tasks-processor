@@ -32,7 +32,7 @@ class Task
                 $list = array();
                 if(isset($responseArray['resource'])) foreach ($responseArray['resource'] as $task) {
                     if(count($responseArray['resource']) - count($list) == 1){
-                        $list[] = PHP_EOL . "Your current task:" . $task['text'] . PHP_EOL;
+                        $list[] = PHP_EOL . "Your current task: " . $task['text'] . PHP_EOL;
                         continue;
                     }
 
@@ -40,29 +40,33 @@ class Task
                 }
 
                 if($list){
-                    array_unshift($list, "Here is list of your tasks:");
+                    array_unshift($list, "Your tasks:");
                 }
 
-                $list[] = "Use /new {task} to add new task";
-                $list[] = "Use /next mark first task complete";
+                $list[] = "Use /new task_description to add new one";
+                $list[] = "Use /next to move to the next task";
 
                 $response = implode(PHP_EOL, $list);
 
                 return $response;
 
             case Telegram::COMMAND_NEW:
-                $response = $this->client->post('/task/add/user/' . $userId, [
+                if(empty($message['text'])){
+                    return 'Please provide task description';
+                }
+
+                $this->client->post('/task/add/user/' . $userId, [
                     'form_params' => [
                         'text' => $message['text']
                     ]
                 ]);
 
-                return 'Task added to your list.' . PHP_EOL .  'Use /start to see your current task and task list';
+                return 'Task added to your list.' . PHP_EOL .  'Use /start to see your tasks list';
 
             case Telegram::COMMAND_NEXT:
-                $response = $this->client->get('/task/completed/user/' . $userId);
+                $this->client->get('/task/completed/user/' . $userId);
 
-                return 'Task completed, move to the next one!' . PHP_EOL .  'Use /start to see your current task and task list';
+                return 'Task completed, move to the next one!' . PHP_EOL .  'Use /start to see your tasks list';
         }
     }
 }

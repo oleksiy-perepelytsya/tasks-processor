@@ -22,17 +22,17 @@ class Telegram
     public function __construct()
     {
         $this->api = new \Longman\TelegramBot\Telegram($_ENV['BOT_API_KEY'], $_ENV['BOT_USERNAME']);
-        $this->api->enableMySql([
-            'host'     => $_ENV['DATABASE_HOST'],
-            'user'     => $_ENV['DATABASE_USER'],
-            'password' => $_ENV['DATABASE_PASSWORD'],
-            'database' => $_ENV['DATABASE_NAME'],
-        ]);
+        $this->api->useGetUpdatesWithoutDatabase();
+        $this->api->handle();
+
     }
 
+    /**
+     * @return mixed
+     */
     public function getUpdates()
     {
-        return $this->api->handleGetUpdates()->getResult();
+        return json_decode($this->api->getCustomInput());
     }
 
     /**
