@@ -38,14 +38,16 @@ class Telegram
     /**
      * @param int $chatId
      * @param array $message
+     * @param array $keyboard
      * @return void
      * @throws TelegramException
      */
-    public function sendMessage($chatId, $message)
+    public function sendMessage($chatId, $message, $keyboard)
     {
         Request::sendMessage([
             'chat_id' => $chatId,
-            'text' => $message
+            'text' => $message,
+            'reply_markup' => json_encode($keyboard)
         ]);
     }
 
